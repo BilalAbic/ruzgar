@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rüzgar Potansiyeli Planlayıcı</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.28/build/spline-viewer.js"></script>
+</head>
+<body>
+  <section class="hero">
+    <spline-viewer class="hero-bg" url="https://prod.spline.design/uXcqSG2Tt37Tl7X0/scene.splinecode"></spline-viewer>
+    <div class="hero-overlay">
+      <div class="hero-top">
+        <div class="welcome-pill">Hoş geldiniz</div>
+      </div>
+      <div class="hero-bottom">
+        <div class="info-card">
+          <p class="eyebrow">Site hakkında</p>
+          <h3>Konum seç, rüzgar gücünü öğren</h3>
+          <p class="muted">Türkiye haritasından nokta seçerek o bölgenin ortalama rüzgar üretimini kWh bazında gör.</p>
+        </div>
+        <div class="info-card">
+          <p class="eyebrow">Maliyet</p>
+          <h3>Kurulum ve işletme hesabı</h3>
+          <p class="muted">Kurulu güç, birim maliyet ve O&M giderlerini girip yatırım büyüklüğünü hesapla.</p>
+        </div>
+        <div class="info-card">
+          <p class="eyebrow">Geri ödeme</p>
+          <h3>Ne kadar sürede karşılar?</h3>
+          <p class="muted">Satış fiyatı ile yıllık net gelirini gör, payback süresini anında öğren.</p>
+        </div>
+        <a class="start-btn" href="#app">Başla</a>
+      </div>
+    </div>
+  </section>
+
+  <header class="topbar">
+    <div class="branding">
+      <span class="logo-dot"></span>
+      <div>
+        <p class="eyebrow">Rüzgar Proje Asistanı</p>
+        <h1>Türkiye Rüzgar Potansiyeli ve Geri Ödeme Hesabı</h1>
+      </div>
+    </div>
+    <p class="lede">Haritadan konum seçin, ortalama rüzgar üretimini görün, kurulum maliyeti ve geri ödeme süresini hesaplayın.</p>
+  </header>
+
+  <main id="app" class="layout">
+    <section class="map-card">
+      <div class="map-shell">
+        <div id="map"></div>
+        <div class="map-overlay" id="apiOverlay">
+          <div class="overlay-header">
+            <div>
+              <p class="eyebrow">Canlı rüzgar verisi</p>
+              <h3>Open-Meteo</h3>
+            </div>
+            <span class="overlay-pill" id="overlayStatus">Bekleniyor</span>
+          </div>
+          <div class="overlay-grid">
+            <div>
+              <p class="eyebrow">Ortalama hız</p>
+              <p class="overlay-value" id="overlayAvg">—</p>
+            </div>
+            <div>
+              <p class="eyebrow">En yüksek</p>
+              <p class="overlay-value" id="overlayMax">—</p>
+            </div>
+            <div>
+              <p class="eyebrow">Saatlik veri</p>
+              <p class="overlay-value" id="overlayCount">—</p>
+            </div>
+          </div>
+          <p class="overlay-note" id="overlayRange">—</p>
+        </div>
+      </div>
+      <div class="map-footer">
+        <div>
+          <p class="eyebrow">Seçili konum</p>
+          <p class="location-label" id="locationLabel">Henüz seçilmedi</p>
+          <p class="coords" id="coordsLabel">—</p>
+        </div>
+        <div class="status-badge" id="statusBadge">Hazır</div>
+      </div>
+    </section>
+
+    <section class="side-panel">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Rüzgar Özeti (1 MW referans)</p>
+            <h2>Ortalama Üretim</h2>
+          </div>
+          <span class="badge" id="apiModeBadge">Mock veri</span>
+        </div>
+        <div class="metrics-grid" id="windMetrics">
+          <div class="metric">
+            <p>Günlük</p>
+            <h3 id="dailyValue">—</h3>
+            <small>kWh / gün</small>
+          </div>
+          <div class="metric">
+            <p>Haftalık</p>
+            <h3 id="weeklyValue">—</h3>
+            <small>kWh / hafta</small>
+          </div>
+          <div class="metric">
+            <p>Aylık</p>
+            <h3 id="monthlyValue">—</h3>
+            <small>kWh / ay</small>
+          </div>
+          <div class="metric">
+            <p>Yıllık</p>
+            <h3 id="yearlyValue">—</h3>
+            <small>kWh / yıl</small>
+          </div>
+        </div>
+        <div class="inline-info">
+          <div>
+            <p class="eyebrow">Beklenen rüzgar hızı</p>
+            <p id="windSpeed">— m/s</p>
+          </div>
+          <div>
+            <p class="eyebrow">Kapasite faktörü</p>
+            <p id="capacityFactor">—</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Maliyet ve geri ödeme</p>
+            <h2>Kurulum Hesaplayıcısı</h2>
+          </div>
+          <span class="hint">Varsayılanları değiştirin</span>
+        </div>
+        <form id="calcForm" class="form-grid">
+          <label>
+            <span>Kurulu güç (kW)</span>
+            <input type="number" id="capacityKw" value="3000" min="100" step="50" required>
+          </label>
+          <label>
+            <span>Kurulum maliyeti (₺/kW)</span>
+            <input type="number" id="costPerKw" value="20000" min="1000" step="500" required>
+          </label>
+          <label>
+            <span>O&M gideri (₺/yıl)</span>
+            <input type="number" id="omCost" value="1500000" min="0" step="50000" required>
+          </label>
+          <label>
+            <span>Satış fiyatı (₺/kWh)</span>
+            <input type="number" id="energyPrice" value="2.3" min="0.1" step="0.1" required>
+          </label>
+        </form>
+        <div class="results" id="results">
+          <div>
+            <p class="eyebrow">Yıllık üretim</p>
+            <h3 id="annualEnergy">— MWh</h3>
+          </div>
+          <div>
+            <p class="eyebrow">Yıllık net gelir</p>
+            <h3 id="annualNet">— ₺</h3>
+          </div>
+          <div>
+            <p class="eyebrow">Geri ödeme</p>
+            <h3 id="payback">— yıl</h3>
+          </div>
+        </div>
+        <p class="note">Not: Üretim hesapları API'den gelen kapasite faktörü üzerinden yapılır. Satış fiyatını ve maliyetleri kendi senaryonuza göre güncelleyin.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">API entegrasyonu</p>
+            <h2>Bağlantıyı değiştirin</h2>
+          </div>
+        </div>
+        <ol class="api-steps">
+          <li><code>app.js</code> içindeki <code>windDataService.fetch()</code> fonksiyonunu kendi rüzgar verisi API'nize göre güncelleyin.</li>
+          <li>API'den kapasite faktörü veya ortalama üretim değerleri gelmiyorsa, <code>capacityFactor</code> ve enerji değerlerini kendiniz hesaplayıp döndürün.</li>
+          <li>Günlük/haftalık/aylık/yıllık değerleri kWh cinsinden dönmeniz yeterlidir; hesaplayıcı bunları otomatik kullanır.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j7kPyk+1O2f1mQIaGb9rGmXRl6E3eWn0iDwmG2M=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
