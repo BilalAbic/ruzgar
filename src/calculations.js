@@ -22,6 +22,28 @@ export const LOSS_FACTORS = {
 };
 
 // ========================
+// ÜLKE BAZLI ELEKTRİK FİYATLARI ($/kWh)
+// ========================
+
+export const ELECTRICITY_PRICES = {
+     TR: 0.09,  // Türkiye
+     DE: 0.38,  // Almanya
+     US: 0.16,  // ABD
+     GB: 0.34,  // İngiltere
+     CN: 0.09,  // Çin
+     FR: 0.25,  // Fransa
+     IN: 0.07,  // Hindistan
+     ES: 0.22,  // İspanya
+     IT: 0.28,  // İtalya
+     NL: 0.30,  // Hollanda
+     DEFAULT: 0.15
+};
+
+export function getElectricityPrice(countryCode) {
+     return ELECTRICITY_PRICES[countryCode?.toUpperCase()] || ELECTRICITY_PRICES.DEFAULT;
+}
+
+// ========================
 // TÜRBİN MODELLERİ
 // ========================
 

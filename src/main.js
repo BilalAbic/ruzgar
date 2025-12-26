@@ -1,8 +1,8 @@
 /**
- * WEIAP - Main Application (Simplified)
+ * WEIAP - Main Application (Fixed v2)
  */
 
-import { fetchWindData } from './api.js';
+import { fetchWindData, detectCountry } from './api.js';
 import * as calc from './calculations.js';
 import './styles.css';
 
@@ -64,7 +64,8 @@ const state = {
      lng: null,
      rawData: null,
      currentTurbine: 'generic_2mw',
-     isLoading: false
+     isLoading: false,
+     countryCode: 'TR'
 };
 
 // ========================
@@ -91,14 +92,12 @@ async function selectAndLoad(lat, lng) {
      state.lat = lat;
      state.lng = lng;
 
-     // UI güncelle
      dom.locationLabel.textContent = 'Yükleniyor...';
      dom.coordsLabel.textContent = `${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E`;
 
      if (marker) marker.setLatLng([lat, lng]);
      else marker = L.marker([lat, lng]).addTo(map);
 
-     // Veri yükle
      state.isLoading = true;
      showLoading(true);
      setStatus('Veri alınıyor...', 'warn');
@@ -109,11 +108,22 @@ async function selectAndLoad(lat, lng) {
           });
 
           state.rawData = data;
-          dom.locationLabel.textContent = 'Seçili konum';
-
-          // Hesapla ve göster
           updateAllMetrics();
 
+          // Ülke tespiti
+          detectCountry(lat, lng).then(code => {
+               if (code) {
+                    state.countryCode = code;
+                    const price = calc.getElectricityPrice(code);
+                    if (dom.economic.electricityPrice) {
+                         dom.economic.electricityPrice.value = price;
+                    }
+                    dom.locationLabel.textContent = `Konum (${code})`;
+                    updateAllMetrics();
+               }
+          });
+
+          dom.locationLabel.textContent = 'Seçili konum';
           setStatus('Tamamlandı ✓', 'good');
           if (dom.overlay.status) dom.overlay.status.textContent = 'Hazır';
 
@@ -121,7 +131,6 @@ async function selectAndLoad(lat, lng) {
           console.error('Hata:', err);
           setStatus('Hata: ' + err.message, 'error');
           dom.locationLabel.textContent = 'Hata oluştu';
-          if (dom.overlay.status) dom.overlay.status.textContent = 'Hata';
      } finally {
           state.isLoading = false;
           showLoading(false);
@@ -129,23 +138,38 @@ async function selectAndLoad(lat, lng) {
 }
 
 function updateAllMetrics() {
-     if (!state.rawData) return;
+     if (!state.rawData?.hourly) return;
 
      const hourly = state.rawData.hourly;
      const turbine = calc.TURBINES[state.currentTurbine];
+
+     // API'den gelen veriler (wind_speed_100m kullanıyoruz, wind_speed_80m yok)
+     const times = hourly.time || [];
+     const wind10m = hourly.wind_speed_10m || [];
+     const wind100m = hourly.wind_speed_100m || []; // 80m yerine 100m
+     const temps = hourly.temperature_2m || [];
+     const pressures = hourly.surface_pressure || [];
+     const directions = hourly.wind_direction_100m || [];
+
+     if (times.length === 0 || wind100m.length === 0) {
+          console.warn('⚠️ Veri eksik');
+          return;
+     }
 
      // Veri işle
      const processed = [];
      let totalAlpha = 0, alphaCount = 0;
 
-     for (let i = 0; i < hourly.time.length; i++) {
-          const v10 = calc.kmhToMs(hourly.wind_speed_10m[i] || 0);
-          const v80 = calc.kmhToMs(hourly.wind_speed_80m[i] || 0);
-          const temp = hourly.temperature_2m[i] || 15;
-          const pressure = hourly.surface_pressure[i] || 1013;
+     for (let i = 0; i < times.length; i++) {
+          const v10 = calc.kmhToMs(wind10m[i] ?? 0);
+          const v100 = calc.kmhToMs(wind100m[i] ?? 0);
+          const temp = temps[i] ?? 15;
+          const pressure = pressures[i] ?? 1013;
 
           const density = calc.calculateAirDensity(temp, pressure);
-          const shear = calc.calculateWindShear(v10, 10, v80, 80, turbine.hubHeight);
+
+          // Wind shear: 10m ve 100m arası, hedef türbin hub yüksekliği
+          const shear = calc.calculateWindShear(v10, 10, v100, 100, turbine.hubHeight);
 
           if (shear.alpha > 0.05 && shear.alpha < 0.5) {
                totalAlpha += shear.alpha;
@@ -155,7 +179,7 @@ function updateAllMetrics() {
           processed.push({
                windSpeed: shear.windSpeed,
                airDensity: density,
-               direction: hourly.wind_direction_100m?.[i] || 0
+               direction: directions[i] ?? 0
           });
      }
 
@@ -166,14 +190,13 @@ function updateAllMetrics() {
      const avgSpeed = processed.reduce((a, h) => a + h.windSpeed, 0) / processed.length;
      const maxSpeed = Math.max(...processed.map(h => h.windSpeed));
 
+     console.log('📊 Sonuçlar:', { grossAEP: aep.grossAEP, netAEP: aep.netAEP, avgSpeed: avgSpeed.toFixed(2) });
+
      // Overlay
      dom.overlay.avg.textContent = `${avgSpeed.toFixed(1)} m/s`;
      dom.overlay.max.textContent = `${maxSpeed.toFixed(1)} m/s`;
      dom.overlay.count.textContent = formatNum(processed.length);
-
-     const startDate = hourly.time[0]?.slice(0, 10) || '';
-     const endDate = hourly.time[hourly.time.length - 1]?.slice(0, 10) || '';
-     dom.overlay.range.textContent = `${startDate} — ${endDate}`;
+     dom.overlay.range.textContent = `${times[0]?.slice(0, 10)} — ${times[times.length - 1]?.slice(0, 10)}`;
 
      // Metrics
      dom.metrics.grossAEP.textContent = formatNum(aep.grossAEP);
@@ -194,7 +217,7 @@ function updateEconomics(aep) {
      const turbine = calc.TURBINES[state.currentTurbine];
      const capexPerKw = parseFloat(dom.economic.capexPerKw?.value) || 1100;
      const opexPerMw = parseFloat(dom.economic.opexPerMw?.value) || 30000;
-     const price = parseFloat(dom.economic.electricityPrice?.value) || 0.055;
+     const price = parseFloat(dom.economic.electricityPrice?.value) || 0.09;
      const lifetime = parseInt(dom.economic.projectLifetime?.value) || 20;
 
      const totalCapex = turbine.ratedPower * capexPerKw;
@@ -317,16 +340,20 @@ dom.turbine.select?.addEventListener('change', (e) => {
      .filter(Boolean)
      .forEach(input => input.addEventListener('input', () => {
           if (state.rawData) {
-               const aep = calc.calculateAEP(
-                    state.rawData.hourly.time.map((_, i) => ({
-                         windSpeed: calc.kmhToMs(state.rawData.hourly.wind_speed_80m[i] || 0),
-                         airDensity: calc.calculateAirDensity(
-                              state.rawData.hourly.temperature_2m[i] || 15,
-                              state.rawData.hourly.surface_pressure[i] || 1013
-                         )
-                    })),
-                    state.currentTurbine
-               );
+               const hourly = state.rawData.hourly;
+               const turbine = calc.TURBINES[state.currentTurbine];
+               const processed = hourly.time.map((_, i) => ({
+                    windSpeed: calc.calculateWindShear(
+                         calc.kmhToMs(hourly.wind_speed_10m?.[i] || 0), 10,
+                         calc.kmhToMs(hourly.wind_speed_100m?.[i] || 0), 100,
+                         turbine.hubHeight
+                    ).windSpeed,
+                    airDensity: calc.calculateAirDensity(
+                         hourly.temperature_2m?.[i] || 15,
+                         hourly.surface_pressure?.[i] || 1013
+                    )
+               }));
+               const aep = calc.calculateAEP(processed, state.currentTurbine);
                updateEconomics(aep);
           }
      }));
@@ -342,5 +369,4 @@ document.querySelector('.start-btn')?.addEventListener('click', (e) => {
 // ========================
 console.log('🌀 WEIAP v1.1 başlatılıyor...');
 updateTurbineSpecs();
-// Bandırma - yüksek rüzgar potansiyeli olan bölge
-selectAndLoad(40.35, 27.97);
+selectAndLoad(40.35, 27.97); // Bandırma
