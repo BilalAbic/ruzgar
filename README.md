@@ -17,6 +17,8 @@ Yapay zeka destekli analiz ve merkeziyetsiz depolama ile rüzgar enerjisi yatır
 
 ## Ekran Görüntüleri
 
+> Aşağıdaki ekran görüntüleri Çanakkale ilimize aittir. Çanakkale, Türkiye'de en fazla rüzgar türbini bulunan ve en yüksek enerji verimi elde edilen ikinci ildir.
+
 ### Dünya Haritası ile Konum Seçimi
 Open-Meteo ERA5 arşiv verileriyle entegre çalışan Leaflet haritası. Harita üzerinde herhangi bir noktaya marker bırakarak o konumun rüzgar hızı, yönü, sıcaklık ve basınç verilerini çekebilirsiniz.
 
