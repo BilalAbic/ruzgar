@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 
 <head>
@@ -6,12 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WEIAP - Rüzgar Enerjisi Altyapı Değerlendirme Platformu</title>
   <meta name="description" content="Türkiye rüzgar enerjisi fizibilite analizi">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css">
+  <link rel="stylesheet" href="./src/styles.css">
   <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.28/build/spline-viewer.js"></script>
 </head>
 
 <body>
-  <section class="hero">
+  <!-- HERO BÖLÜMÜ (ANİMASYONLU) -->
+  <section class="hero" id="heroSection">
     <spline-viewer class="hero-bg" url="https://prod.spline.design/uXcqSG2Tt37Tl7X0/scene.splinecode"></spline-viewer>
     <div class="hero-overlay">
       <div class="hero-top">
@@ -21,87 +24,69 @@
         <div class="info-card">
           <p class="eyebrow">Platform</p>
           <h3>Tekno-Ekonomik Fizibilite</h3>
-          <p class="muted">3 yıllık arşiv verisi ile gerçekçi analiz</p>
+          <p class="muted">Open-Meteo ERA5 arşiv verisiyle rüzgar analizi</p>
         </div>
         <div class="info-card">
-          <p class="eyebrow">Motor</p>
-          <h3>Wind Shear & Yoğunluk</h3>
-          <p class="muted">Hellmann yasası ile doğru güç tahmini</p>
+          <p class="eyebrow">Hesaplama</p>
+          <h3>AEP & Kapasite Faktörü</h3>
+          <p class="muted">Hellmann yasası ile hub yüksekliği hesabı</p>
         </div>
         <div class="info-card">
           <p class="eyebrow">Ekonomi</p>
           <h3>LCOE & ROI</h3>
-          <p class="muted">Elektrik maliyeti ve geri ödeme</p>
+          <p class="muted">Yatırım geri dönüş analizi</p>
         </div>
-        <a class="start-btn" href="#app">Analize Başla</a>
+        <a class="start-btn" href="#" id="startBtn">Analize Başla</a>
       </div>
     </div>
   </section>
 
-  <header class="topbar">
-    <div class="branding">
-      <span class="logo-dot"></span>
+  <!-- ANA İÇERİK -->
+  <div class="main-content" id="mainContent">
+    <header>
       <div>
-        <p class="eyebrow">Wind Energy Infrastructure Assessment Platform</p>
-        <h1>WEIAP - Türkiye Rüzgar Enerjisi Fizibilite Analizi</h1>
+        <p class="eyebrow">Open-Meteo ERA5 + Leaflet</p>
+        <h1>Rüzgar Enerjisi Fizibilite Analizi</h1>
+        <p class="lede">Haritadan konum seç, arşiv verisiyle AEP, Kapasite Faktörü ve LCOE hesapla.</p>
       </div>
-    </div>
-    <p class="lede">Haritadan konum seçin, profesyonel fizibilite raporu alın.</p>
-  </header>
+      <div class="pill">Ücretsiz API</div>
+    </header>
 
-  <main id="app" class="layout">
-    <section class="map-card">
-      <div class="map-shell">
-        <div id="map"></div>
-        <div class="map-overlay">
-          <div class="overlay-header">
-            <div>
-              <p class="eyebrow">Arşiv Verisi</p>
-              <h3>Open-Meteo</h3>
-            </div>
-            <span class="overlay-pill" id="overlayStatus">Bekleniyor</span>
-          </div>
-          <div class="overlay-grid">
-            <div>
-              <p class="eyebrow">Ort. Hız (Hub)</p>
-              <p class="overlay-value" id="overlayAvg">—</p>
-            </div>
-            <div>
-              <p class="eyebrow">En Yüksek</p>
-              <p class="overlay-value" id="overlayMax">—</p>
-            </div>
-            <div>
-              <p class="eyebrow">Veri Sayısı</p>
-              <p class="overlay-value" id="overlayCount">—</p>
-            </div>
-          </div>
-          <p class="overlay-note" id="overlayRange">—</p>
+    <main>
+      <!-- HARİTA PANELİ -->
+      <section class="panel map-panel">
+        <div class="panel-head">
+          <h2>📍 Konum Seçimi</h2>
+          <p class="hint">Sol üstten marker seç ve haritada nokta bırak</p>
         </div>
-      </div>
-      <div class="map-footer">
-        <div>
-          <p class="eyebrow">Seçili konum</p>
-          <p class="location-label" id="locationLabel">Henüz seçilmedi</p>
-          <p class="coords" id="coordsLabel">—</p>
+        <div id="map" class="map"></div>
+        <div class="map-info">
+          <span id="coordsLabel">Koordinat: —</span>
+          <span id="statusBadge" class="status-badge">Hazır</span>
         </div>
-        <div class="footer-controls">
-          <select id="dataYears" class="data-years-select">
-            <option value="1">1 Yıl (Hızlı)</option>
-            <option value="2">2 Yıl</option>
-            <option value="3">3 Yıl (Detaylı)</option>
-          </select>
-          <div class="status-badge" id="statusBadge">Hazır</div>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="side-panel">
-      <div class="panel turbine-panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Türbin Konfigürasyonu</p>
-            <h2>Model Seçimi</h2>
+      <!-- RÜZGAR GRAFİĞİ -->
+      <section class="panel chart-panel">
+        <div class="panel-head">
+          <h2>📊 Rüzgar Verileri</h2>
+          <div class="controls">
+            <button data-period="hourly">Saatlik</button>
+            <button data-period="daily">Günlük</button>
+            <button data-period="monthly" class="active">Aylık</button>
+            <button data-period="yearly">Yıllık</button>
           </div>
+        </div>
+        <div id="status" class="status">Haritadan bir nokta seç.</div>
+        <div id="chart-wrapper" class="chart-wrapper">
+          <canvas id="windChart" height="140"></canvas>
+        </div>
+      </section>
+
+      <!-- TÜRBİN SEÇİMİ -->
+      <section class="panel turbine-panel hidden-panel" id="turbinePanel">
+        <div class="panel-head">
+          <h2>⚙️ Türbin Konfigürasyonu</h2>
         </div>
         <select id="turbineSelect" class="turbine-select">
           <option value="generic_2mw">Genel 2 MW (Hub: 80m)</option>
@@ -111,7 +96,7 @@
         <div class="turbine-specs">
           <div class="spec-item">
             <span class="spec-label">Nominal Güç</span>
-            <span class="spec-value" id="turbineRatedPower">2,000 kW</span>
+            <span class="spec-value" id="turbineRatedPower">2.000 kW</span>
           </div>
           <div class="spec-item">
             <span class="spec-label">Göbek Yüksekliği</span>
@@ -122,14 +107,12 @@
             <span class="spec-value" id="turbineSpeeds">3.5 / 12 / 25 m/s</span>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Teknik Analiz</p>
-            <h2>Yıllık Enerji Üretimi</h2>
-          </div>
+      <!-- TEKNİK METRİKLER -->
+      <section class="panel metrics-panel hidden-panel" id="metricsPanel">
+        <div class="panel-head">
+          <h2>⚡ Yıllık Enerji Üretimi</h2>
           <span class="badge">AEP</span>
         </div>
         <div class="aep-grid">
@@ -162,63 +145,268 @@
             <h3 id="avgDensity">—</h3>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Ekonomik Fizibilite</p>
-            <h2>Yatırım Analizi</h2>
-          </div>
-          <span class="hint">USD</span>
+      <!-- EKONOMİK ANALİZ -->
+      <section class="panel economic-panel hidden-panel" id="economicPanel">
+        <div class="panel-head">
+          <h2>💰 Ekonomik Fizibilite</h2>
+          <span id="investmentRecommendation" class="recommendation-badge">—</span>
         </div>
-        <form class="form-grid">
-          <label><span>CAPEX ($/kW)</span><input type="number" id="capexPerKw" value="1100" min="500"></label>
-          <label><span>OPEX ($/MW/yıl)</span><input type="number" id="opexPerMw" value="30000" min="5000"></label>
-          <label><span>Fiyat ($/kWh)</span><input type="number" id="electricityPrice" value="0.055"
-              step="0.005"></label>
-          <label><span>Ömür (Yıl)</span><input type="number" id="projectLifetime" value="20" min="10" max="30"></label>
-        </form>
-        <div class="economic-results">
-          <div class="econ-card lcoe">
+
+        <!-- Yatırım Özeti Kartı -->
+        <div class="investment-summary" id="investmentSummary">
+          <div class="summary-icon" id="summaryIcon">📊</div>
+          <div class="summary-content">
+            <h4 id="summaryTitle">Veri Bekleniyor</h4>
+            <p id="summaryText">Haritadan bir konum seçerek analizi başlatın.</p>
+          </div>
+          <div class="risk-gauge" id="riskGauge">
+            <div class="gauge-fill" id="riskGaugeFill"></div>
+            <span class="gauge-label" id="riskLabel">—</span>
+          </div>
+        </div>
+
+        <!-- Giriş Parametreleri -->
+        <details class="param-details" open>
+          <summary>⚙️ Yatırım Parametreleri</summary>
+          <form class="form-grid">
+            <label><span>CAPEX ($/kW)</span><input type="number" id="capexPerKw" value="1100" min="500"></label>
+            <label><span>OPEX ($/MW/yıl)</span><input type="number" id="opexPerMw" value="30000" min="5000"></label>
+            <label><span>Elektrik ($/kWh)</span><input type="number" id="electricityPrice" value="0.09"
+                step="0.005"></label>
+            <label><span>Proje Ömrü (Yıl)</span><input type="number" id="projectLifetime" value="20" min="10"
+                max="30"></label>
+          </form>
+        </details>
+
+        <!-- Ana Metrikler -->
+        <div class="economic-results main-metrics">
+          <div class="econ-card lcoe animated-card">
+            <div class="card-icon">⚡</div>
             <p class="eyebrow">LCOE</p>
             <h3 id="lcoeValue">—</h3>
             <small>$/MWh</small>
           </div>
-          <div class="econ-card">
-            <p class="eyebrow">CAPEX</p>
-            <h3 id="totalCapex">—</h3>
+          <div class="econ-card npv animated-card">
+            <div class="card-icon">📈</div>
+            <p class="eyebrow">NPV</p>
+            <h3 id="npvValue">—</h3>
+            <small>Net Bugünkü Değer</small>
           </div>
-          <div class="econ-card">
-            <p class="eyebrow">Gelir/Yıl</p>
-            <h3 id="annualRevenue">—</h3>
+          <div class="econ-card irr animated-card">
+            <div class="card-icon">📊</div>
+            <p class="eyebrow">IRR</p>
+            <h3 id="irrValue">—</h3>
+            <small>İç Verim Oranı</small>
           </div>
-          <div class="econ-card payback">
-            <p class="eyebrow">Geri Ödeme</p>
-            <h3 id="paybackPeriod">—</h3>
-            <small>yıl</small>
+          <div class="econ-card roi animated-card">
+            <div class="card-icon">💎</div>
+            <p class="eyebrow">ROI</p>
+            <h3 id="roiValue">—</h3>
+            <small>Yatırım Getirisi</small>
           </div>
         </div>
-      </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Rüzgar Karakteristiği</p>
-            <h2>Yön Dağılımı</h2>
+        <!-- Finansal Detaylar -->
+        <div class="financial-breakdown">
+          <div class="breakdown-row">
+            <div class="breakdown-item capex">
+              <span class="breakdown-label">💵 Toplam Yatırım</span>
+              <span class="breakdown-value" id="totalCapex">—</span>
+            </div>
+            <div class="breakdown-item revenue">
+              <span class="breakdown-label">💰 Yıllık Gelir</span>
+              <span class="breakdown-value" id="annualRevenue">—</span>
+            </div>
           </div>
+          <div class="breakdown-row">
+            <div class="breakdown-item payback">
+              <span class="breakdown-label">⏱️ Geri Ödeme</span>
+              <span class="breakdown-value"><span id="paybackPeriod">—</span> yıl</span>
+            </div>
+            <div class="breakdown-item total">
+              <span class="breakdown-label">🏆 Toplam Gelir <small id="projectLifetimeDisplay">(20 yıl)</small></span>
+              <span class="breakdown-value" id="totalRevenue">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kârlılık Progress Bar -->
+        <div class="profitability-section">
+          <div class="profit-header">
+            <span>📉 Geri Ödeme Süreci</span>
+            <span class="profit-percent" id="paybackPercent">—</span>
+          </div>
+          <div class="profit-timeline">
+            <div class="timeline-bar">
+              <div class="timeline-fill" id="paybackProgressFill" style="width: 0%"></div>
+              <div class="timeline-marker" id="paybackMarker" style="left: 0%"></div>
+            </div>
+            <div class="timeline-labels">
+              <span>Yatırım</span>
+              <span id="paybackYearLabel">? yıl</span>
+              <span id="projectEndLabel">20 yıl</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RÜZGAR GÜLÜ -->
+      <section class="panel rose-panel hidden-panel" id="rosePanel">
+        <div class="panel-head">
+          <h2>🧭 Rüzgar Yönü Dağılımı</h2>
         </div>
         <div class="wind-rose-container">
-          <canvas id="windRoseCanvas" width="260" height="260"></canvas>
+          <canvas id="windRoseCanvas" width="240" height="240"></canvas>
         </div>
         <div class="dominant-direction">
           <span class="eyebrow">Hakim Yön</span>
           <span id="dominantDirection">—</span>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
 
+      <!-- AI ANALİZ -->
+      <section class="panel ai-panel">
+        <div class="panel-head">
+          <h2>🤖 Yapay Zeka Analizi</h2>
+          <span class="badge ai-badge">GPT-4o</span>
+        </div>
+
+        <!-- Analiz Durumu -->
+        <div class="ai-status" id="aiStatus">
+          <div class="ai-status-icon">💡</div>
+          <div class="ai-status-text">
+            <p>Konum seçtikten sonra AI analizi yapabilirsiniz</p>
+          </div>
+        </div>
+
+        <!-- Analiz Butonu -->
+        <div class="analysis-actions" id="analysisActions">
+          <button id="runAnalysis" class="btn-ai" disabled>
+            <span class="btn-icon">✨</span>
+            <span class="btn-text">Yatırım Analizi Yap</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+
+        <!-- Analiz Sonucu -->
+        <div class="analysis-result" id="analysisResult" style="display: none;">
+
+          <!-- Karar Kartı -->
+          <div class="verdict-card" id="verdictCard">
+            <div class="verdict-icon" id="verdictIcon">📊</div>
+            <div class="verdict-content">
+              <h3 id="verdictTitle">AI Değerlendirmesi</h3>
+              <p class="verdict-subtitle" id="verdictSubtitle">Yatırım analizi tamamlandı</p>
+            </div>
+            <div class="verdict-badge" id="verdictBadge">—</div>
+          </div>
+
+          <!-- Anahtar Metrikler -->
+          <div class="ai-key-metrics" id="aiKeyMetrics">
+            <div class="key-metric">
+              <span class="metric-icon">�</span>
+              <span class="metric-label">Yıllık Gelir</span>
+              <span class="metric-value" id="aiRevenue">—</span>
+            </div>
+            <div class="key-metric">
+              <span class="metric-icon">⏱️</span>
+              <span class="metric-label">Geri Ödeme</span>
+              <span class="metric-value" id="aiPayback">—</span>
+            </div>
+            <div class="key-metric">
+              <span class="metric-icon">📈</span>
+              <span class="metric-label">IRR</span>
+              <span class="metric-value" id="aiIRR">—</span>
+            </div>
+          </div>
+
+          <!-- Analiz Metni -->
+          <div class="analysis-text-container">
+            <div class="analysis-header">
+              <span class="analysis-icon">📝</span>
+              <span>Detaylı Değerlendirme</span>
+            </div>
+            <div class="analysis-text" id="analysisText">
+              <!-- AI analiz metni buraya gelecek -->
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="analysis-footer">
+            <div class="footer-left">
+              <span class="ai-chip">🤖 AI Powered</span>
+            </div>
+            <div class="footer-right">
+              <small id="analysisInfo">GPT-4o</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WALRUS & SEAL EXPORT -->
+      <section class="panel walrus-panel" style="grid-column: 1 / -1;">
+        <div class="panel-head">
+          <h2>☁️ Merkeziyetsiz Raporlama</h2>
+          <div class="badges">
+            <span class="badge walrus-badge">Walrus</span>
+            <span class="badge seal-badge">Seal</span>
+          </div>
+        </div>
+
+        <div class="walrus-content">
+          <p class="walrus-desc">
+            Analiz raporunu PDF olarak oluşturun, <strong>Seal</strong> ile şifreleyin ve <strong>Walrus</strong>
+            üzerinde merkeziyetsiz olarak saklayın.
+          </p>
+
+          <div class="walrus-actions">
+            <button id="btnExportPDF" class="btn-walrus" disabled>
+              <span class="icon">📄</span>
+              <span>PDF İndir</span>
+            </button>
+            <button id="btnWalrusUpload" class="btn-walrus primary" disabled>
+              <span class="icon">☁️</span>
+              <span>Şifrele ve Walrus'a Yükle</span>
+            </button>
+          </div>
+
+          <!-- Yükleme Durumu -->
+          <div id="walrusStatus" class="walrus-status" style="display: none;">
+            <div class="status-step" id="stepPDF">
+              <span class="step-icon">○</span> PDF Oluşturuluyor...
+            </div>
+            <div class="status-step" id="stepEncrypt">
+              <span class="step-icon">○</span> Seal ile Şifreleniyor...
+            </div>
+            <div class="status-step" id="stepUpload">
+              <span class="step-icon">○</span> Walrus'a Yükleniyor...
+            </div>
+          </div>
+
+          <!-- Sonuç -->
+          <div id="walrusResult" class="walrus-result" style="display: none;">
+            <div class="result-box">
+              <div class="result-row">
+                <span class="label">Blob ID:</span>
+                <code id="blobIdResult"></code>
+                <button class="copy-btn"
+                  onclick="navigator.clipboard.writeText(document.getElementById('blobIdResult').innerText)">📋</button>
+              </div>
+              <div class="result-row">
+                <span class="label">Explorer:</span>
+                <a id="walrusScanLink" href="#" target="_blank" class="link-btn">WalrusScan ↗</a>
+              </div>
+              <p class="note">🔒 Bu dosya şifrelidir. Sadece erişim yetkisi olanlar görüntüleyebilir.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-content">
       <div class="spinner"></div>
@@ -227,8 +415,10 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="/src/main.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="./src/main.js"></script>
 </body>
 
 </html>

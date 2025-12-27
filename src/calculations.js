@@ -23,24 +23,174 @@ export const LOSS_FACTORS = {
 
 // ========================
 // ÜLKE BAZLI ELEKTRİK FİYATLARI ($/kWh)
+// Kaynak: GlobalPetrolPrices.com (2024 Q4)
+// Konut elektrik fiyatları, vergiler dahil
 // ========================
 
 export const ELECTRICITY_PRICES = {
-     TR: 0.09,  // Türkiye
+     // AVRUPA
      DE: 0.38,  // Almanya
-     US: 0.16,  // ABD
+     BE: 0.35,  // Belçika
+     DK: 0.36,  // Danimarka
+     IE: 0.32,  // İrlanda
      GB: 0.34,  // İngiltere
-     CN: 0.09,  // Çin
-     FR: 0.25,  // Fransa
-     IN: 0.07,  // Hindistan
-     ES: 0.22,  // İspanya
-     IT: 0.28,  // İtalya
      NL: 0.30,  // Hollanda
+     IT: 0.28,  // İtalya
+     AT: 0.27,  // Avusturya
+     ES: 0.22,  // İspanya
+     PT: 0.21,  // Portekiz
+     FR: 0.25,  // Fransa
+     SE: 0.24,  // İsveç
+     CH: 0.23,  // İsviçre
+     NO: 0.18,  // Norveç
+     FI: 0.19,  // Finlandiya
+     PL: 0.17,  // Polonya
+     CZ: 0.22,  // Çekya
+     SK: 0.18,  // Slovakya
+     HU: 0.11,  // Macaristan
+     RO: 0.14,  // Romanya
+     BG: 0.12,  // Bulgaristan
+     GR: 0.19,  // Yunanistan
+     HR: 0.15,  // Hırvatistan
+     SI: 0.18,  // Slovenya
+     RS: 0.08,  // Sırbistan
+     BA: 0.09,  // Bosna Hersek
+     AL: 0.10,  // Arnavutluk
+     MK: 0.09,  // K. Makedonya
+     MT: 0.13,  // Malta
+     CY: 0.24,  // Kıbrıs
+     LU: 0.21,  // Lüksemburg
+     EE: 0.18,  // Estonya
+     LV: 0.19,  // Letonya
+     LT: 0.17,  // Litvanya
+     IS: 0.14,  // İzlanda
+     UA: 0.05,  // Ukrayna
+     BY: 0.06,  // Belarus
+     MD: 0.11,  // Moldova
+
+     // TÜRKİYE VE ORTA DOĞU
+     TR: 0.09,  // Türkiye
+     IL: 0.17,  // İsrail
+     JO: 0.11,  // Ürdün
+     SA: 0.05,  // Suudi Arabistan
+     AE: 0.08,  // BAE
+     QA: 0.03,  // Katar
+     KW: 0.02,  // Kuveyt
+     BH: 0.03,  // Bahreyn
+     OM: 0.04,  // Umman
+     LB: 0.10,  // Lübnan
+     SY: 0.02,  // Suriye
+     IQ: 0.03,  // Irak
+     IR: 0.01,  // İran
+
+     // ASYA
+     CN: 0.09,  // Çin
+     JP: 0.23,  // Japonya
+     KR: 0.11,  // Güney Kore
+     TW: 0.10,  // Tayvan
+     HK: 0.15,  // Hong Kong
+     SG: 0.18,  // Singapur
+     MY: 0.06,  // Malezya
+     TH: 0.11,  // Tayland
+     VN: 0.08,  // Vietnam
+     PH: 0.18,  // Filipinler
+     ID: 0.10,  // Endonezya
+     IN: 0.07,  // Hindistan
+     PK: 0.08,  // Pakistan
+     BD: 0.07,  // Bangladeş
+     LK: 0.11,  // Sri Lanka
+     NP: 0.07,  // Nepal
+     MM: 0.05,  // Myanmar
+     KH: 0.18,  // Kamboçya
+     LA: 0.06,  // Laos
+     MN: 0.05,  // Moğolistan
+     KZ: 0.04,  // Kazakistan
+     UZ: 0.02,  // Özbekistan
+     AZ: 0.04,  // Azerbaycan
+     GE: 0.07,  // Gürcistan
+     AM: 0.08,  // Ermenistan
+
+     // AMERİKA
+     US: 0.16,  // ABD
+     CA: 0.13,  // Kanada
+     MX: 0.09,  // Meksika
+     BR: 0.15,  // Brezilya
+     AR: 0.06,  // Arjantin
+     CL: 0.14,  // Şili
+     CO: 0.12,  // Kolombiya
+     PE: 0.11,  // Peru
+     VE: 0.01,  // Venezuela (sübvanse)
+     EC: 0.09,  // Ekvador
+     UY: 0.17,  // Uruguay
+     PY: 0.05,  // Paraguay
+     BO: 0.06,  // Bolivya
+     CR: 0.14,  // Kosta Rika
+     PA: 0.18,  // Panama
+     GT: 0.15,  // Guatemala
+     HN: 0.14,  // Honduras
+     SV: 0.16,  // El Salvador
+     NI: 0.21,  // Nikaragua
+     DO: 0.14,  // Dominik C.
+     CU: 0.02,  // Küba
+     JM: 0.28,  // Jamaika
+     TT: 0.04,  // Trinidad
+     PR: 0.24,  // Porto Riko
+
+     // AFRİKA
+     ZA: 0.12,  // Güney Afrika
+     EG: 0.04,  // Mısır
+     NG: 0.05,  // Nijerya
+     KE: 0.18,  // Kenya
+     TZ: 0.10,  // Tanzanya
+     UG: 0.16,  // Uganda
+     GH: 0.13,  // Gana
+     CI: 0.14,  // Fildişi S.
+     SN: 0.19,  // Senegal
+     CM: 0.08,  // Kamerun
+     ET: 0.03,  // Etiyopya
+     MA: 0.12,  // Fas
+     DZ: 0.04,  // Cezayir
+     TN: 0.07,  // Tunus
+     LY: 0.01,  // Libya
+     ZW: 0.10,  // Zimbabve
+     ZM: 0.06,  // Zambiya
+     MZ: 0.10,  // Mozambik
+     AO: 0.06,  // Angola
+     BW: 0.09,  // Botsvana
+     NA: 0.14,  // Namibya
+     MU: 0.12,  // Mauritius
+     MG: 0.14,  // Madagaskar
+     MW: 0.10,  // Malavi
+
+     // OKYANUSYA
+     AU: 0.22,  // Avustralya
+     NZ: 0.18,  // Yeni Zelanda
+     FJ: 0.16,  // Fiji
+     PG: 0.20,  // Papua Y.G.
+
+     // RUSYA VE BDT
+     RU: 0.06,  // Rusya
+
+     // VARSAYILAN
      DEFAULT: 0.15
+};
+
+// Ülke isimlerini içeren yardımcı obje
+export const COUNTRY_NAMES = {
+     TR: 'Türkiye', DE: 'Almanya', US: 'ABD', GB: 'İngiltere', CN: 'Çin',
+     FR: 'Fransa', IT: 'İtalya', ES: 'İspanya', JP: 'Japonya', KR: 'G. Kore',
+     BR: 'Brezilya', IN: 'Hindistan', RU: 'Rusya', AU: 'Avustralya', CA: 'Kanada',
+     MX: 'Meksika', NL: 'Hollanda', BE: 'Belçika', SE: 'İsveç', PL: 'Polonya',
+     SA: 'S. Arabistan', AE: 'BAE', EG: 'Mısır', ZA: 'G. Afrika', ID: 'Endonezya',
+     TH: 'Tayland', VN: 'Vietnam', MY: 'Malezya', PH: 'Filipinler', SG: 'Singapur'
 };
 
 export function getElectricityPrice(countryCode) {
      return ELECTRICITY_PRICES[countryCode?.toUpperCase()] || ELECTRICITY_PRICES.DEFAULT;
+}
+
+export function getCountryName(countryCode) {
+     return COUNTRY_NAMES[countryCode?.toUpperCase()] || countryCode;
 }
 
 // ========================
@@ -201,6 +351,156 @@ export function calculatePayback(capex, annualRevenue, opexPerYear) {
 
 export function calculateAnnualRevenue(netAEP, electricityPrice) {
      return netAEP * 1000 * electricityPrice;
+}
+
+/**
+ * Net Present Value (NPV) hesaplama
+ */
+export function calculateNPV(capex, annualCashFlow, discountRate, lifetime) {
+     let npv = -capex;
+     for (let year = 1; year <= lifetime; year++) {
+          npv += annualCashFlow / Math.pow(1 + discountRate, year);
+     }
+     return npv;
+}
+
+/**
+ * Internal Rate of Return (IRR) hesaplama - Newton-Raphson yöntemi
+ */
+export function calculateIRR(capex, annualCashFlow, lifetime, maxIterations = 100) {
+     if (annualCashFlow <= 0) return 0;
+
+     let irr = 0.1; // Başlangıç tahmini %10
+
+     for (let i = 0; i < maxIterations; i++) {
+          let npv = -capex;
+          let derivative = 0;
+
+          for (let year = 1; year <= lifetime; year++) {
+               const df = Math.pow(1 + irr, year);
+               npv += annualCashFlow / df;
+               derivative -= year * annualCashFlow / Math.pow(1 + irr, year + 1);
+          }
+
+          if (Math.abs(npv) < 0.01) break;
+          if (derivative === 0) break;
+
+          irr = irr - npv / derivative;
+
+          // Sınırlar
+          if (irr < -0.99) irr = -0.99;
+          if (irr > 1) irr = 1;
+     }
+
+     return irr;
+}
+
+/**
+ * Return on Investment (ROI) hesaplama
+ */
+export function calculateROI(totalRevenue, totalCost) {
+     if (totalCost <= 0) return 0;
+     return ((totalRevenue - totalCost) / totalCost) * 100;
+}
+
+/**
+ * Kapsamlı finansal analiz
+ */
+export function calculateFinancials(params) {
+     const {
+          netAEP,
+          electricityPrice,
+          capexPerKw,
+          opexPerMw,
+          ratedPower,
+          lifetime = 20,
+          discountRate = 0.08,
+          degradationRate = 0.005, // Yıllık %0.5 verim kaybı
+          inflationRate = 0.02 // Yıllık %2 enflasyon
+     } = params;
+
+     // Temel hesaplamalar
+     const totalCapex = ratedPower * capexPerKw;
+     const annualOpex = opexPerMw * (ratedPower / 1000);
+     const baseRevenue = netAEP * 1000 * electricityPrice;
+
+     // Yıllık nakit akışları
+     let totalRevenue = 0;
+     let totalOpex = 0;
+     let npv = -totalCapex;
+     const cashFlows = [-totalCapex];
+
+     for (let year = 1; year <= lifetime; year++) {
+          // Verim kaybı ve enflasyon ayarlaması
+          const yearlyAEP = netAEP * Math.pow(1 - degradationRate, year - 1);
+          const yearlyPrice = electricityPrice * Math.pow(1 + inflationRate, year - 1);
+          const yearlyOpex = annualOpex * Math.pow(1 + inflationRate, year - 1);
+
+          const yearlyRevenue = yearlyAEP * 1000 * yearlyPrice;
+          const yearlyCashFlow = yearlyRevenue - yearlyOpex;
+
+          totalRevenue += yearlyRevenue;
+          totalOpex += yearlyOpex;
+          npv += yearlyCashFlow / Math.pow(1 + discountRate, year);
+          cashFlows.push(yearlyCashFlow);
+     }
+
+     // IRR hesaplama
+     const avgCashFlow = (totalRevenue - totalOpex) / lifetime;
+     const irr = calculateIRR(totalCapex, avgCashFlow, lifetime);
+
+     // Basit geri ödeme
+     const simplePayback = calculatePayback(totalCapex, baseRevenue, annualOpex);
+
+     // İndirimli geri ödeme
+     let discountedPayback = Infinity;
+     let cumulative = -totalCapex;
+     for (let year = 1; year <= lifetime; year++) {
+          cumulative += cashFlows[year] / Math.pow(1 + discountRate, year);
+          if (cumulative >= 0) {
+               discountedPayback = year;
+               break;
+          }
+     }
+
+     // ROI
+     const roi = calculateROI(totalRevenue, totalCapex + totalOpex);
+
+     // LCOE
+     const lcoe = calculateLCOE(totalCapex, annualOpex, netAEP, lifetime, discountRate);
+
+     // Profit Margin
+     const profitMargin = totalRevenue > 0 ? ((totalRevenue - totalCapex - totalOpex) / totalRevenue) * 100 : 0;
+
+     return {
+          // Yatırım
+          totalCapex,
+          annualOpex,
+          totalOpex,
+
+          // Gelir
+          annualRevenue: baseRevenue,
+          totalRevenue,
+
+          // Karlılık
+          npv,
+          irr: irr * 100, // Yüzde olarak
+          roi,
+          profitMargin,
+
+          // Geri ödeme
+          simplePayback,
+          discountedPayback,
+
+          // Maliyet
+          lcoe,
+
+          // Değerlendirme
+          isViable: npv > 0,
+          riskLevel: irr > 0.15 ? 'Düşük' : irr > 0.08 ? 'Orta' : 'Yüksek',
+          recommendation: npv > 0 && simplePayback < lifetime * 0.5 ? 'Yatırım Önerilir' :
+               npv > 0 ? 'Dikkatli Değerlendir' : 'Yatırım Önerilmez'
+     };
 }
 
 export function fillDataGaps(data) {
