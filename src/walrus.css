@@ -1,0 +1,166 @@
+/* WALRUS & SEAL PANEL */
+.walrus-panel {
+     border: 1px solid #7dd3fc;
+     background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+}
+
+.walrus-badge {
+     background: #3b82f6 !important;
+     color: white;
+}
+
+.seal-badge {
+     background: #8b5cf6 !important;
+     color: white;
+}
+
+.walrus-desc {
+     font-size: 14px;
+     color: #475569;
+     margin-bottom: 20px;
+}
+
+.walrus-actions {
+     display: flex;
+     gap: 12px;
+     margin-bottom: 20px;
+}
+
+.btn-walrus {
+     flex: 1;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+     padding: 12px;
+     border-radius: 12px;
+     border: 1px solid #cbd5e1;
+     background: white;
+     color: #475569;
+     font-weight: 600;
+     cursor: pointer;
+     transition: all 0.2s;
+}
+
+.btn-walrus:hover:not(:disabled) {
+     background: #f1f5f9;
+     transform: translateY(-2px);
+}
+
+.btn-walrus.primary {
+     background: #0ea5e9;
+     color: white;
+     border: none;
+}
+
+.btn-walrus.primary:hover:not(:disabled) {
+     background: #0284c7;
+     box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.btn-walrus:disabled {
+     opacity: 0.5;
+     cursor: not-allowed;
+}
+
+.walrus-status {
+     padding: 16px;
+     background: white;
+     border-radius: 12px;
+     border: 1px solid #e2e8f0;
+     margin-bottom: 16px;
+}
+
+.status-step {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+     font-size: 14px;
+     color: #64748b;
+     margin-bottom: 8px;
+}
+
+.status-step.active {
+     color: #0ea5e9;
+     font-weight: 600;
+}
+
+.status-step.active .step-icon {
+     animation: spin 1s linear infinite;
+}
+
+.status-step.done {
+     color: #22c55e;
+}
+
+.status-step.done .step-icon {
+     content: '✓';
+}
+
+@keyframes spin {
+     100% {
+          transform: rotate(360deg);
+     }
+}
+
+.walrus-result {
+     animation: slideDown 0.3s ease-out;
+}
+
+.result-box {
+     background: #fff;
+     border: 1px solid #e2e8f0;
+     border-radius: 12px;
+     padding: 16px;
+}
+
+.result-row {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     margin-bottom: 12px;
+     padding-bottom: 12px;
+     border-bottom: 1px solid #f1f5f9;
+}
+
+.result-row:last-child {
+     border-bottom: none;
+     margin-bottom: 0;
+     padding-bottom: 0;
+}
+
+.result-row code {
+     background: #f1f5f9;
+     padding: 4px 8px;
+     border-radius: 4px;
+     font-family: monospace;
+     font-size: 12px;
+     color: #0f172a;
+}
+
+.copy-btn {
+     background: none;
+     border: none;
+     cursor: pointer;
+     padding: 4px;
+}
+
+.link-btn {
+     color: #0ea5e9;
+     text-decoration: none;
+     font-weight: 600;
+     font-size: 14px;
+}
+
+.link-btn:hover {
+     text-decoration: underline;
+}
+
+.note {
+     margin: 12px 0 0;
+     font-size: 11px;
+     color: #94a3b8;
+     display: flex;
+     align-items: center;
+     gap: 4px;
+}
