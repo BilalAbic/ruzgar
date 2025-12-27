@@ -7,6 +7,31 @@ export default defineConfig({
      },
      build: {
           outDir: 'dist',
-          minify: 'terser'
+          minify: 'terser',
+          target: 'esnext'
+     },
+     define: {
+          'process.env': {},
+          global: 'globalThis',
+     },
+     resolve: {
+          alias: {
+               process: "process/browser",
+               stream: "stream-browserify",
+               zlib: "browserify-zlib",
+               util: "util",
+          }
+     },
+     optimizeDeps: {
+          esbuildOptions: {
+               target: 'esnext',
+               define: {
+                    global: 'globalThis'
+               },
+               supported: {
+                    bigint: true
+               },
+          }
      }
 });
+
